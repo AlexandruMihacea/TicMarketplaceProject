@@ -2,22 +2,29 @@ import { createStore } from "vuex";
 
 export default createStore({
   state: {
-    user: null,
+    userId: null,
+    token: null,
   },
   mutations: {
-    setUser(state, user) {
-      state.user = user;
+    setUser(state, payload) {
+      state.userId = payload.userId;
+      state.token = payload.token;
     },
+    logout(state) {
+      state.userId = null;
+      state.token = null;
+    }
   },
   actions: {
-    login({ commit }, user) {
-      commit("setUser", user);
+    login({ commit }, { userId, token }) {
+      commit("setUser", { userId, token });
     },
     logout({ commit }) {
-      commit("setUser", null);
-    },
+      commit("logout");
+    }
   },
   getters: {
-    isAuthenticated: (state) => !!state.user,
-  },
+    isAuthenticated: state => !!state.token,
+    getUserId: state => state.userId,
+  }
 });

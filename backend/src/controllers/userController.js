@@ -1,5 +1,4 @@
-const express = require("express");
-const { registerUser, loginUser, getUserById } = require("../services/userService");
+const { registerUser, loginUser, getUserById, getAllUsers } = require("../services/userService");
 
 const userController = {
     register: async (req, res, next) => {
@@ -27,6 +26,15 @@ const userController = {
         try {
             const user = await getUserById(uid);
             res.status(200).json(user);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getAll: async (req, res, next) => {
+        try {
+            const users = await getAllUsers();
+            res.status(200).json(users);
         } catch (error) {
             next(error);
         }

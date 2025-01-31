@@ -1,6 +1,6 @@
 const { auth } = require("../config/firebaseAuth"); 
 const { db } = require("../config/firebase");
-const { getDoc, setDoc, doc } = require("firebase/firestore");
+const { getDoc, getDocs, setDoc, doc, collection } = require("firebase/firestore");
 
 
 const registerUser = async (email, password, firstName, lastName) => {
@@ -55,4 +55,26 @@ const getUserById = async (uid) => {
     }
 };
 
-module.exports = { registerUser, loginUser, getUserById };
+const getAllUsers = async () => {
+    try {
+        const usersRef = collection(db, "Users");
+        const querySnapshot = await getDocs(usersRef);
+
+        const users = querySnapshot.docs.map(doc => {
+            const userData = doc.data();
+            
+            if (!userData.email || !userData.firstName || !userData.lastName) {
+                console.warn("Document with missing fields:", doc.id, userData);
+            }
+
+            return { id: doc.id, ...userData };
+        });
+
+        return { success: true, users };
+    } catch (error) {
+        console.error("Firestore error:", error.message);
+        return { success: false, error: error.message };
+    }
+};
+
+module.exports = { registerUser, loginUser, getUserById, getAllUsers };
