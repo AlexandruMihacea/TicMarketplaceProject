@@ -47,7 +47,7 @@ export default {
     // 🔹 Register → Apelează backend-ul prin `api.js`
     const handleRegister = async () => {
       registerError.value = "";
-      const response = await api.post("/users/register", registerData.value);
+      const response = await api.createUser("/users/register", registerData.value);
 
       if (response.success) {
         alert("Account created successfully! Please login.");
@@ -58,16 +58,26 @@ export default {
 
     // 🔹 Login → Apelează Firebase direct
     const handleLogin = async () => {
-      loginError.value = "";
-      const response = await AuthService.login(loginData.value.email, loginData.value.password);
+        console.log("🔹 handleLogin() called");
 
-      if (response.success) {
-        store.dispatch("login", { userId: response.userId, token: response.token });
-        router.push("/dashboard");
-      } else {
-        loginError.value = response.error;
-      }
-    };
+        loginError.value = "";
+        const response = await AuthService.login(loginData.value.email, loginData.value.password);
+
+        console.log("🔹 Login response:", response); 
+
+        if (response.success) {
+          store.dispatch("login", { 
+            userId: response.userId, 
+            token: response.token, 
+            userFirstName: response.firstName, 
+            userLastName: response.lastName, 
+            email: response.email 
+          });
+          router.push("/dashboard");
+        } else {
+          loginError.value = response.error;
+        }
+};
 
     return { loginData, registerData, loginError, registerError, handleLogin, handleRegister };
   }
